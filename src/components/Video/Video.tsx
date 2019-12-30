@@ -1,13 +1,24 @@
 // https://www.techradar.com/news/the-best-free-stock-video-sites
 // https://www.shutterstock.com/nb/video/search/teknologi
 // https://vimeo.com/149224063
+// https://jakearchibald.github.io/svgomg/
+// https://medium.com/@allalmohamedlamine/react-best-way-of-importing-svg-the-how-and-why-f7c968272dd9
+// https://github.com/facebook/create-react-app/issues/1388
 
 import React, { useState, SyntheticEvent } from 'react';
 import {VideoQualityInterface} from '../../interfaces/VideoQualityInterface';
+import './Video.css';
+import {ReactComponent as PlayIcon} from '../../assets/icons/play.svg';
+import {ReactComponent as PauseIcon} from '../../assets/icons/pause.svg';
+import {ReactComponent as SpeakerIcon} from '../../assets/icons/speaker.svg';
+import {ReactComponent as QualityIcon} from '../../assets/icons/quality.svg';
+import {ReactComponent as PipIcon} from '../../assets/icons/pictureinpicture.svg';
+import {ReactComponent as FullscreenIcon} from '../../assets/icons/fullscreen.svg';
 
 const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (props: any) => {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [isFullscreen, setIsFullscreen] = useState(false);
+	const [isPictureInPicture, setIsPictureInPicture] = useState(false);
 	const [currentQuality, setCurrentQuality] = useState(props.qualities[0]);
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
@@ -21,18 +32,21 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 		video?.pause();
 	}
 	const adjustVolume = (vol: number) => video ? video.volume = vol : null;
-	const enterFullScreen = () => {
-		if(container) container.requestFullscreen().then(() => setIsFullscreen(true));
-	};
-	const exitFullScreen = () => {
-		document.exitFullscreen().then(() => setIsFullscreen(false));
+	const toggleFullScreen = () => {
+		if (document.fullscreenElement !== null) {
+			document.exitFullscreen().then(() => setIsFullscreen(false));
+		} else {
+			if(container) container.requestFullscreen().then(() => setIsFullscreen(true));
+		}
 	};
 	const enterPictureInPicture = () => {
-		if(video) video.requestPictureInPicture();
+		// @ts-ignore
+		if(video) video.requestPictureInPicture().then(() => setIsPictureInPicture(true));
 	};
-	const exitPictureInPicture = () => {
-		document.exitPictureInPicture();
-	};
+	/* const exitPictureInPicture = () => {
+		// @ts-ignore
+		document.exitPictureInPicture().then(() => setIsPictureInPicture(false));
+	}; */
 	const formatTime = (time: number) => {
 		const seconds = Math.floor(time % 60);
 		const minutes = Math.floor(time / 60 % 60);
@@ -48,13 +62,9 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 
 	return (
 		<div className="video" ref={(el: HTMLDivElement) => container = el}>
-			<div className="video__meta">
-				<h1>{props.title}</h1>
-				<pre>{isPlaying ? 'isPlaying' : 'isNot'}</pre>
-			</div>
+			<span className="video__meta">{props.title}</span>
 
 			<video 
-			controls 
 			ref={(el: HTMLVideoElement) => video = el}
 			onLoadedMetadata={(e: SyntheticEvent) => setDuration((e.target as HTMLVideoElement).duration)}
 			onTimeUpdate={(e: SyntheticEvent) => setCurrentTime((e.target as HTMLVideoElement).currentTime)}
@@ -64,13 +74,22 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 			</video>
 
 			<div className="video__controls">
-				<div className="video__scrub" aria-label="Scrub through video">Scrub</div>
-				<button className="video__play" aria-label="Play/pause video" onClick={isPlaying ? pause : play}>Play/pause</button>
-				<div className="video__volume" aria-label="Adjust video volumne">Volume</div>
-				<div className="video__time">{formatTime(currentTime)} / {formatTime(duration)}</div>
-				<div className="video__quality" aria-label="Change video quality">Quality</div>
-				<button className="video__picinpic" aria-label="Toggle video picture in picture mode" onClick={enterPictureInPicture}>Picture in picture</button>
-				<button className="video__fullscreen" aria-label="Toggle video fullscreen mode" onClick={isFullscreen ? exitFullScreen : enterFullScreen}>Enter/exit Fullscreen</button>
+				<button className="video__scrub" aria-label="Scrub through video"> { /*todo: make this do stuff*/ }
+					<div className="video__scrub__track"></div>
+					<div className="video__scrub__line"></div>
+				</button>
+				<div className="video__controls__lower">
+					<div>
+						<button className="video__play" aria-label="Play/pause video" onClick={isPlaying ? pause : play}><PlayIcon/></button>
+						<button className="video__volume" aria-label="Adjust video volumne"><SpeakerIcon/></button>
+						<span className="video__time">{formatTime(currentTime)} / {formatTime(duration)}</span>
+					</div>
+					<div>
+						<button className="video__quality" aria-label="Change video quality"><QualityIcon/></button>
+						<button className="video__picinpic" aria-label="Toggle video picture in picture mode" onClick={enterPictureInPicture}><PipIcon/></button>
+						<button className="video__fullscreen" aria-label="Toggle video fullscreen mode" onClick={toggleFullScreen}><FullscreenIcon/></button>
+					</div>
+				</div>
 			</div>
 		</div>
 	)
