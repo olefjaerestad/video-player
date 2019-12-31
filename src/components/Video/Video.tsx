@@ -43,6 +43,26 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 		// @ts-ignore
 		if(video) video.requestPictureInPicture().then(() => setIsPictureInPicture(true));
 	};
+	/* const scrubHandler = (e: SyntheticEvent) => {
+		const {target} = e;
+		// @ts-ignore
+		const clickX: number = e.pageX;
+		const targetLeft: number = (target as HTMLButtonElement).getBoundingClientRect().left;
+		const targetWidth: number = (target as HTMLButtonElement).getBoundingClientRect().width;
+		const progress: number = (clickX-targetLeft) / targetWidth; // 0-1
+		const newTime = duration * progress;
+		if (newTime >= 0) {
+			setCurrentTime(newTime);
+			if(video) video.currentTime = newTime;
+		}
+	} */
+	const scrubHandler = (e: SyntheticEvent) => {
+		const {target} = e;
+		// @ts-ignore
+		const progress = target.value;
+		setCurrentTime(progress);
+		if(video) video.currentTime = progress;
+	}
 	/* const exitPictureInPicture = () => {
 		// @ts-ignore
 		document.exitPictureInPicture().then(() => setIsPictureInPicture(false));
@@ -69,15 +89,17 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 			onLoadedMetadata={(e: SyntheticEvent) => setDuration((e.target as HTMLVideoElement).duration)}
 			onTimeUpdate={(e: SyntheticEvent) => setCurrentTime((e.target as HTMLVideoElement).currentTime)}
 			onPlay={() => setIsPlaying(true)}
-			onPause={() => setIsPlaying(false)}>
+			onPause={() => setIsPlaying(false)}
+			onClick={isPlaying ? pause : play}>
 				<source src={currentQuality.src} type={currentQuality.type} />
 			</video>
 
 			<div className="video__controls">
-				<button className="video__scrub" aria-label="Scrub through video"> { /*todo: make this do stuff*/ }
+				<div className="video__scrub" aria-label="Scrub through video">
+					<input type="range" className="video__scrub__scrubber" value={currentTime} max={duration} onChange={scrubHandler}/>
 					<div className="video__scrub__track"></div>
-					<div className="video__scrub__line"></div>
-				</button>
+					<div className="video__scrub__line" style={{'width': `${currentTime/duration*100}%`}}></div>
+				</div>
 				<div className="video__controls__lower">
 					<div>
 						<button className="video__play" aria-label="Play/pause video" onClick={isPlaying ? pause : play}><PlayIcon/><PauseIcon/></button>
