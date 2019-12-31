@@ -80,7 +80,7 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 				</button>
 				<div className="video__controls__lower">
 					<div>
-						<button className="video__play" aria-label="Play/pause video" onClick={isPlaying ? pause : play}><PlayIcon/></button>
+						<button className="video__play" aria-label="Play/pause video" onClick={isPlaying ? pause : play}><PlayIcon/><PauseIcon/></button>
 						<button className="video__volume" aria-label="Adjust video volumne"><SpeakerIcon/></button>
 						<span className="video__time">{formatTime(currentTime)} / {formatTime(duration)}</span>
 					</div>

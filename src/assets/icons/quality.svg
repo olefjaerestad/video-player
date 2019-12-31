@@ -1,6 +1,6 @@
 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-<g stroke="#fff" stroke-width="15" fill="none" fill-rule="evenodd">
-<circle id="qualityCircle" cx="50" cy="50" r="42.5"/>
-<path id="qualityLine" d="M89.26 89.318L71.222 70.63" stroke-linecap="square"/>
+<g stroke="#fff" stroke-width="5" fill="none" fill-rule="evenodd">
+<circle id="qualityCircle" cx="50" cy="50" r="47.5"/>
+<path id="qualityLine" d="M71 71.5l25 25" stroke-linecap="square"/>
 </g>
 </svg>
