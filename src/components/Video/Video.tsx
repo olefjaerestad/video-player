@@ -19,9 +19,11 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [isFullscreen, setIsFullscreen] = useState(false);
 	const [isPictureInPicture, setIsPictureInPicture] = useState(false);
+	const [isAdjustingVolume, setAdjustingVolume] = useState(false);
 	const [currentQuality, setCurrentQuality] = useState(props.qualities[0]);
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
+	const [volume, setVolume] = useState(1);
 	let container: HTMLDivElement|null = null;
 	let video: HTMLVideoElement|null = null;
 
@@ -31,7 +33,10 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 	const pause = () => {
 		video?.pause();
 	}
-	const adjustVolume = (vol: number) => video ? video.volume = vol : null;
+	const adjustVolume = (vol: number) => {
+		if(video) video.volume = vol;
+		setVolume(vol);
+	};
 	const toggleFullScreen = () => {
 		if (document.fullscreenElement !== null) {
 			document.exitFullscreen().then(() => setIsFullscreen(false));
@@ -101,12 +106,17 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 					<div className="video__scrub__line" style={{'width': `${currentTime/duration*100}%`}}></div>
 				</div>
 				<div className="video__controls__lower">
-					<div>
+					<div className="video__controls__left">
 						<button className="video__play" aria-label="Play/pause video" onClick={isPlaying ? pause : play}><PlayIcon/><PauseIcon/></button>
-						<button className="video__volume" aria-label="Adjust video volumne"><SpeakerIcon/></button>
+						<span className="video__volume" onMouseOver={() => setAdjustingVolume(true)} onMouseLeave={() => setAdjustingVolume(false)}>
+							<span className="video__volume__toggle" aria-label="Adjust video volumne">
+								<SpeakerIcon/>
+							</span>
+							<input type="range" min="0" max="1" step="0.02" value={volume} className="video__volume__scrub" style={{width: !isAdjustingVolume ? '0' : '60px', opacity: !isAdjustingVolume ? '0' : '1'}} onChange={(e) => adjustVolume(parseFloat((e.target as HTMLInputElement).value))} onFocus={()=>setAdjustingVolume(true)} onBlur={()=>setAdjustingVolume(false)}/>
+						</span>
 						<span className="video__time">{formatTime(currentTime)} / {formatTime(duration)}</span>
 					</div>
-					<div>
+					<div className="video__controls__right">
 						<button className="video__quality" aria-label="Change video quality"><QualityIcon/></button>
 						<button className="video__picinpic" aria-label="Toggle video picture in picture mode" onClick={enterPictureInPicture}><PipIcon/></button>
 						<button className="video__fullscreen" aria-label="Toggle video fullscreen mode" onClick={toggleFullScreen}><FullscreenIcon/></button>
