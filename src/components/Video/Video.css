@@ -2,7 +2,9 @@
 .video {
 	--color-primary: hsl(180deg, 100% , 50%);
 	--color-white: hsl(0, 0%, 100%);
+	--color-white-transparent: hsla(0, 0%, 100%, .1);
 	--color-black: hsl(0, 0%, 14%);
+	--color-black-transparent: hsla(0, 0%, 14%, .7);
 
 	--layout-gutter: 1rem;
 
@@ -25,9 +27,8 @@
 	display: block;
 }
 .video button {
-	font-size: 1rem;
 	text-align: left;
-	color: var(--color-black);
+	color: var(--color-white);
 	background-color: transparent;
 	padding: 0;
 	border: 0;
@@ -212,7 +213,7 @@
 	transform: scale(.7);
 }
 .video__play,
-.video__quality,
+.video__quality__toggle,
 .video__volume__toggle,
 .video__picinpic,
 .video__fullscreen {
@@ -223,7 +224,7 @@
 	align-items: center;
 }
 .video__play svg,
-.video__quality svg,
+.video__quality__toggle svg,
 .video__volume__toggle svg,
 .video__picinpic svg,
 .video__fullscreen svg {
@@ -241,4 +242,39 @@
 }
 .video__time {
 	margin-left: 10px;
+}
+.video__quality {
+	position: relative;
+}
+.video__quality__list {
+	font-size: 12px;
+	list-style-type: none;
+	background-color: var(--color-black-transparent);
+	padding: 0;
+	margin: 0;
+	position: absolute;
+	right: 0;
+	bottom: 100%;
+	opacity: 0;
+	pointer-events: none;
+	transition: var(--transition);
+}
+.video__quality__list.isActive {
+	opacity: 1;
+	pointer-events: auto;
+}
+.video__quality__list li.isActive button:before {
+	content: '\2713';
+	position: absolute;
+	top: calc(50% - .5em);
+	left: 5px;
+}
+.video__quality__list button {
+	width: 100%;
+	padding: 8px 20px;
+	position: relative;
+}
+.video__quality__list button:hover,
+.video__quality__list button:focus {
+	background-color: var(--color-white-transparent);
 }
