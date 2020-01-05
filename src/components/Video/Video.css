@@ -14,6 +14,7 @@
 
 	--scrubberSize: 16px;
 
+	display: flex;
 	position: relative;
 	box-sizing: border-box;
 }

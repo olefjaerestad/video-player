@@ -104,7 +104,10 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 			onTimeUpdate={(e: SyntheticEvent) => setCurrentTime((e.target as HTMLVideoElement).currentTime)}
 			onPlay={() => setIsPlaying(true)}
 			onPause={() => setIsPlaying(false)}
-			onClick={isPlaying ? pause : play}>
+			onClick={() => {
+				isPlaying ? pause() : play();
+				setIsAdjustingQuality(false);
+			}}>
 			</video>
 
 			<div className="video__controls">
@@ -118,7 +121,7 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 					<div className="video__controls__left">
 						<button className="video__play" aria-label="Play/pause video" onClick={isPlaying ? pause : play}><PlayIcon/><PauseIcon/></button>
 						<span className="video__volume" onMouseOver={() => setIsAdjustingVolume(true)} onMouseLeave={() => setIsAdjustingVolume(false)}>
-							<button className="video__volume__toggle" aria-label="Mute/unmute video">
+							<button className="video__volume__toggle" aria-label="Mute/unmute video" onClick={() => adjustVolume(0)} onFocus={() => setIsAdjustingVolume(true)} onBlur={() => setIsAdjustingVolume(false)}>
 								<SpeakerIcon/>
 							</button>
 							<input type="range" min="0" max="1" step="0.02" value={volume} className="video__volume__scrub" style={{width: !isAdjustingVolume ? '0' : '60px', opacity: !isAdjustingVolume ? '0' : '1'}} onChange={e => adjustVolume(parseFloat((e.target as HTMLInputElement).value))} onFocus={() => setIsAdjustingVolume(true)} onBlur={() => setIsAdjustingVolume(false)}/>
@@ -130,7 +133,7 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 						<span className="video__quality">
 							<button className="video__quality__toggle" onClick={() => isAdjustingQuality ? setIsAdjustingQuality(false) : setIsAdjustingQuality(true)} aria-label="Change video quality"><QualityIcon/></button>
 							<ul className={`video__quality__list ${isAdjustingQuality ? 'isActive' : ''}`}>
-								{props.qualities.map((x: VideoQualityInterface, i: number) => <li key={x.title} className={x.title === currentQuality.title ? 'isActive' : ''}><button onClick={() => {setCurrentQuality(x); setIsPlaying(false); gotoTime(currentTime)}}>{x.title}</button></li>)}
+								{props.qualities.map((x: VideoQualityInterface, i: number) => <li key={x.title} className={x.title === currentQuality.title ? 'isActive' : ''}><button onClick={() => {setIsAdjustingQuality(false); setCurrentQuality(x); setIsPlaying(false); gotoTime(currentTime)}}>{x.title}</button></li>)}
 							</ul>
 						</span>
 						<button className="video__picinpic" aria-label="Toggle video picture in picture mode" onClick={enterPictureInPicture}><PipIcon/></button>
