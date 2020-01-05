@@ -94,7 +94,7 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 
 	return (
 		<div className="video" ref={container}>
-			<span className="video__meta">{props.title}</span>
+			<span className="video__meta" title={props.title}>{props.title}</span>
 
 			<video 
 			src={currentQuality.src}
@@ -109,6 +109,8 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 			}}>
 			</video>
 
+			<span className="video__statusIcon">{isPlaying ? <PlayIcon/> : currentTime !== 0 ? <PauseIcon/> : null}</span>
+
 			<div className="video__controls">
 				<div className="video__scrub" aria-label="Scrub through video">
 					<input type="range" className="video__scrub__scrubber" value={currentTime} max={duration} onChange={scrubHandler}/>
@@ -118,9 +120,9 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 
 				<div className="video__controls__lower">
 					<div className="video__controls__left">
-						<button className="video__play" aria-label="Play/pause video" onClick={isPlaying ? pause : play}><PlayIcon/><PauseIcon/></button>
+						<button className="video__play" aria-label="Play/pause video" onClick={isPlaying ? pause : play}>{isPlaying ? <PauseIcon/> : <PlayIcon/>}</button>
 						<span className="video__volume" onMouseOver={() => setIsAdjustingVolume(true)} onMouseLeave={() => setIsAdjustingVolume(false)}>
-							<button className="video__volume__toggle" aria-label="Mute/unmute video" onClick={() => adjustVolume(0)} onFocus={() => setIsAdjustingVolume(true)} onBlur={() => setIsAdjustingVolume(false)}>
+							<button className={`video__volume__toggle ${volume === 0 ? 'isMuted' : ''} ${volume > 0 ? 'level1' : ''} ${volume > .33 ? 'level2' : ''} ${volume > .66 ? 'level3' : ''}`} aria-label="Mute/unmute video" onClick={() => adjustVolume(0)} onFocus={() => setIsAdjustingVolume(true)} onBlur={() => setIsAdjustingVolume(false)}>
 								<SpeakerIcon/>
 							</button>
 							<input type="range" min="0" max="1" step="0.02" value={volume} className="video__volume__scrub" style={{width: !isAdjustingVolume ? '0' : '60px', opacity: !isAdjustingVolume ? '0' : '1'}} onChange={e => adjustVolume(parseFloat((e.target as HTMLInputElement).value))} onFocus={() => setIsAdjustingVolume(true)} onBlur={() => setIsAdjustingVolume(false)}/>
