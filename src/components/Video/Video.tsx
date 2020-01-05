@@ -5,7 +5,7 @@
 // https://medium.com/@allalmohamedlamine/react-best-way-of-importing-svg-the-how-and-why-f7c968272dd9
 // https://github.com/facebook/create-react-app/issues/1388
 
-import React, { useState, SyntheticEvent } from 'react';
+import React, { useState, useRef, SyntheticEvent } from 'react';
 import {VideoQualityInterface} from '../../interfaces/VideoQualityInterface';
 import './Video.css';
 import {ReactComponent as PlayIcon} from '../../assets/icons/play.svg';
@@ -25,31 +25,29 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const [volume, setVolume] = useState(1);
-	let container: HTMLDivElement|null = null;
-	let video: HTMLVideoElement|null = null;
+	const container = useRef<HTMLDivElement>(null);
+	const video = useRef<HTMLVideoElement>(null);
 
 	const play = () => {
-		console.log('play:\n', video);
-		video?.play();
+		video?.current?.play();
 	}
 	const pause = () => {
-		console.log('pause:\n', video);
-		video?.pause();
+		video?.current?.pause();
 	}
 	const adjustVolume = (vol: number) => {
-		if(video) video.volume = vol;
+		if(video.current) video.current.volume = vol;
 		setVolume(vol);
 	};
 	const toggleFullScreen = () => {
 		if (document.fullscreenElement !== null) {
 			document.exitFullscreen().then(() => setIsFullscreen(false));
 		} else {
-			if(container) container.requestFullscreen().then(() => setIsFullscreen(true));
+			if(container.current) container.current.requestFullscreen().then(() => setIsFullscreen(true));
 		}
 	};
 	const enterPictureInPicture = () => {
 		// @ts-ignore
-		if(video) video.requestPictureInPicture().then(() => setIsPictureInPicture(true));
+		if(video.current) video.current.requestPictureInPicture().then(() => setIsPictureInPicture(true));
 	};
 	/* const scrubHandler = (e: SyntheticEvent) => {
 		const {target} = e;
@@ -68,14 +66,14 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 		const {target} = e;
 		// @ts-ignore
 		const progress = target.value;
-		/* setCurrentTime(progress); */
 		gotoTime(progress);
 	}
 	const gotoTime = (time: number) => {
-		console.log(time);
-		console.log(video); /* todo: video is undefined when gotoTime() runs after having changed currentQuality, so video always resets to time 0 when changing quality. must fix. */
 		setCurrentTime(time);
-		if(video) video.currentTime = time;
+		// setTimeout() is required, or else video will be null when gotoTime() runs directly after having changed currentQuality, so video in turn always resets to time 0 when changing quality.
+		setTimeout(() => {
+			if(video.current) video.current.currentTime = time;
+		}, 50);
 	}
 	/* const exitPictureInPicture = () => {
 		// @ts-ignore
@@ -95,21 +93,13 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 	}
 
 	return (
-		<div className="video" ref={(el: HTMLDivElement) => container = el}>
+		<div className="video" ref={container}>
 			<span className="video__meta">{props.title}</span>
 
-			{/* <video 
-			ref={(el: HTMLVideoElement) => video = el}
-			onLoadedMetadata={(e: SyntheticEvent) => setDuration((e.target as HTMLVideoElement).duration)}
-			onTimeUpdate={(e: SyntheticEvent) => setCurrentTime((e.target as HTMLVideoElement).currentTime)}
-			onPlay={() => setIsPlaying(true)}
-			onPause={() => setIsPlaying(false)}
-			onClick={isPlaying ? pause : play}>
-				<source src={currentQuality.src} type={currentQuality.type} />
-			</video> */}
 			<video 
+			id="video"
 			src={currentQuality.src}
-			ref={(el: HTMLVideoElement) => video = el}
+			ref={video}
 			onLoadedMetadata={(e: SyntheticEvent) => setDuration((e.target as HTMLVideoElement).duration)}
 			onTimeUpdate={(e: SyntheticEvent) => setCurrentTime((e.target as HTMLVideoElement).currentTime)}
 			onPlay={() => setIsPlaying(true)}
@@ -140,7 +130,7 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 						<span className="video__quality">
 							<button className="video__quality__toggle" onClick={() => isAdjustingQuality ? setIsAdjustingQuality(false) : setIsAdjustingQuality(true)} aria-label="Change video quality"><QualityIcon/></button>
 							<ul className={`video__quality__list ${isAdjustingQuality ? 'isActive' : ''}`}>
-								{props.qualities.map((x: VideoQualityInterface, i: number) => <li key={x.title} className={x.title === currentQuality.title ? 'isActive' : ''}><button onClick={() => {setCurrentQuality(x); setIsPlaying(false); setTimeout(() => gotoTime(currentTime), 500);}}>{x.title}</button></li>)}
+								{props.qualities.map((x: VideoQualityInterface, i: number) => <li key={x.title} className={x.title === currentQuality.title ? 'isActive' : ''}><button onClick={() => {setCurrentQuality(x); setIsPlaying(false); gotoTime(currentTime)}}>{x.title}</button></li>)}
 							</ul>
 						</span>
 						<button className="video__picinpic" aria-label="Toggle video picture in picture mode" onClick={enterPictureInPicture}><PipIcon/></button>
