@@ -260,7 +260,7 @@
 	pointer-events: none;
 	transition: var(--transition);
 }
-.video__quality__list.isActive {
+.video__quality:focus-within .video__quality__list {
 	opacity: 1;
 	pointer-events: auto;
 }

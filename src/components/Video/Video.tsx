@@ -131,9 +131,13 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 
 					<div className="video__controls__right">
 						<span className="video__quality">
-							<button className="video__quality__toggle" onClick={() => isAdjustingQuality ? setIsAdjustingQuality(false) : setIsAdjustingQuality(true)} aria-label="Change video quality"><QualityIcon/></button>
-							<ul className={`video__quality__list ${isAdjustingQuality ? 'isActive' : ''}`}>
-								{props.qualities.map((x: VideoQualityInterface, i: number) => <li key={x.title} className={x.title === currentQuality.title ? 'isActive' : ''}><button onClick={() => {setIsAdjustingQuality(false); setCurrentQuality(x); setIsPlaying(false); gotoTime(currentTime)}}>{x.title}</button></li>)}
+							<button className="video__quality__toggle" onClick={() => isAdjustingQuality ? setIsAdjustingQuality(false) : setIsAdjustingQuality(true)} onFocus={() => setIsAdjustingQuality(true)} onBlur={() => setIsAdjustingQuality(false)} aria-label="Change video quality"><QualityIcon/></button>
+							<ul className="video__quality__list">
+								{props.qualities.map((x: VideoQualityInterface, i: number) => 
+									<li key={x.title} className={x.title === currentQuality.title ? 'isActive' : ''}>
+										<button onClick={() => {setIsAdjustingQuality(false); setCurrentQuality(x); setIsPlaying(false); gotoTime(currentTime)}} onFocus={() => setIsAdjustingQuality(true)} onBlur={() => setIsAdjustingQuality(false)}>{x.title}</button>
+									</li>
+								)}
 							</ul>
 						</span>
 						<button className="video__picinpic" aria-label="Toggle video picture in picture mode" onClick={enterPictureInPicture}><PipIcon/></button>
