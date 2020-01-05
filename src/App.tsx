@@ -12,7 +12,7 @@ const App: React.FC = () => {
 			{title: '1280x720', src: '/video/three-corners-1280x720.mp4', type: 'video/mp4'},
 			{title: '1920x1080', src: '/video/three-corners-1920x1080.mp4', type: 'video/mp4'},
 		],
-		title: 'Young Entrepreneur Walking Toward City Sky Scrapers Dubai Urban Panorama Futuristic Digital Nomad Night Downtown Slow Motion Red Epic 8k'
+		title: 'Three Corners'
 	} as VideoInterface);
 
 	return (
