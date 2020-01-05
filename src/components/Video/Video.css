@@ -210,7 +210,8 @@
 	transition: var(--transition);
 }
 .video__scrub:hover .video__scrub__line::after,
-.video__scrub:focus .video__scrub__line::after {
+.video__scrub:focus .video__scrub__line::after,
+.video__scrub:focus-within .video__scrub__line::after {
 	transform: scale(.7);
 }
 .video__play,
