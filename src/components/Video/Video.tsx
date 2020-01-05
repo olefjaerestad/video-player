@@ -97,7 +97,6 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 			<span className="video__meta">{props.title}</span>
 
 			<video 
-			id="video"
 			src={currentQuality.src}
 			ref={video}
 			onLoadedMetadata={(e: SyntheticEvent) => setDuration((e.target as HTMLVideoElement).duration)}
