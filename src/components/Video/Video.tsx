@@ -23,6 +23,7 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 	const [isAdjustingQuality, setIsAdjustingQuality] = useState(false);
 	const [currentQuality, setCurrentQuality] = useState(props.qualities[0]);
 	const [currentTime, setCurrentTime] = useState(0);
+	const [previewTime, setPreviewTime] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const [volume, setVolume] = useState(1);
 	const container = useRef<HTMLDivElement>(null);
@@ -68,6 +69,16 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 		const progress = target.value;
 		gotoTime(progress);
 	}
+	const scrubHoverHandler = (e: SyntheticEvent) => {
+		const {target} = e;
+		// @ts-ignore
+		const clickX: number = e.pageX;
+		const targetLeft: number = (target as HTMLButtonElement).getBoundingClientRect().left;
+		const targetWidth: number = (target as HTMLButtonElement).getBoundingClientRect().width;
+		const progress: number = (clickX-targetLeft) / targetWidth; // 0-1
+		const newTime = duration * progress;
+		setPreviewTime(newTime);
+	}
 	const gotoTime = (time: number) => {
 		setCurrentTime(time);
 		// setTimeout() is required, or else video will be null when gotoTime() runs directly after having changed currentQuality, so video in turn always resets to time 0 when changing quality.
@@ -106,16 +117,18 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 			onClick={() => {
 				isPlaying ? pause() : play();
 				setIsAdjustingQuality(false);
-			}}>
+			}}
+			onDoubleClick={toggleFullScreen}>
 			</video>
 
 			<span className="video__statusIcon">{isPlaying ? <PlayIcon/> : currentTime !== 0 ? <PauseIcon/> : null}</span>
 
 			<div className="video__controls">
 				<div className="video__scrub" aria-label="Scrub through video">
-					<input type="range" className="video__scrub__scrubber" value={currentTime} max={duration} onChange={scrubHandler}/>
+					<input type="range" className="video__scrub__scrubber" value={currentTime} max={duration} onChange={scrubHandler} onMouseMove={scrubHoverHandler} onMouseLeave={() => setPreviewTime(0)}/>
 					<div className="video__scrub__track"></div>
 					<div className="video__scrub__line" style={{'width': `${currentTime/duration*100}%`}}></div>
+					{previewTime > 0 && previewTime < duration && <span className="video__scrub__preview" style={{'left': `${previewTime/duration*100}%`}}>{formatTime(previewTime)}</span>}
 				</div>
 
 				<div className="video__controls__lower">
