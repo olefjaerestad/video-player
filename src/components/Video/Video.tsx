@@ -111,7 +111,7 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 			src={currentQuality.src}
 			ref={video}
 			onLoadedMetadata={(e: SyntheticEvent) => setDuration((e.target as HTMLVideoElement).duration)}
-			onTimeUpdate={(e: SyntheticEvent) => {setCurrentTime((e.target as HTMLVideoElement).currentTime); setPreviewTime((e.target as HTMLVideoElement).currentTime);}}
+			onTimeUpdate={(e: SyntheticEvent) => setCurrentTime((e.target as HTMLVideoElement).currentTime)}
 			onPlay={() => setIsPlaying(true)}
 			onPause={() => setIsPlaying(false)}
 			onClick={() => {
@@ -125,7 +125,7 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 
 			<div className="video__controls">
 				<div className="video__scrub" aria-label="Scrub through video">
-					<input type="range" className="video__scrub__scrubber" value={currentTime} max={duration} onChange={scrubHandler} onMouseMove={scrubHoverHandler} onMouseLeave={() => setPreviewTime(0)} onBlur={() => setPreviewTime(0)}/>
+					<input type="range" className="video__scrub__scrubber" value={currentTime} max={duration} onChange={scrubHandler} onMouseMove={scrubHoverHandler} onMouseLeave={() => setPreviewTime(0)}/>
 					<div className="video__scrub__track"></div>
 					<div className="video__scrub__line" style={{'width': `${currentTime/duration*100}%`}}></div>
 					{previewTime > 0 && previewTime < duration && <span className="video__scrub__preview" style={{'left': `${previewTime/duration*100}%`}}>{formatTime(previewTime)}</span>}
