@@ -109,6 +109,7 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 
 			<video 
 			src={currentQuality.src}
+			tabIndex={0}
 			ref={video}
 			onLoadedMetadata={(e: SyntheticEvent) => setDuration((e.target as HTMLVideoElement).duration)}
 			onTimeUpdate={(e: SyntheticEvent) => setCurrentTime((e.target as HTMLVideoElement).currentTime)}
@@ -118,7 +119,8 @@ const Video: React.FC<{qualities: VideoQualityInterface[], title?: string}> = (p
 				isPlaying ? pause() : play();
 				setIsAdjustingQuality(false);
 			}}
-			onDoubleClick={toggleFullScreen}>
+			onDoubleClick={toggleFullScreen}
+			onKeyUp={e => [' ', 'Enter'].includes(e.key) ? isPlaying ? pause() : play() : null}>
 			</video>
 
 			<span className="video__statusIcon">{isPlaying ? <PlayIcon/> : currentTime !== 0 ? <PauseIcon/> : null}</span>
